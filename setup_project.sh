@@ -4,6 +4,12 @@ read -r -p "Enter project name: " project_name
 
 PROJECT_DIR="attendance_tracker_${project_name}"
 
+# Check if directory already exists
+if [ -d "$PROJECT_DIR" ]; then
+    echo "Error: Directory '$PROJECT_DIR' already exists."
+    exit 1
+fi
+
 # Process managemnet (The trap)
 Signal_handling() {
  echo ""
@@ -24,6 +30,12 @@ trap Signal_handling SIGINT
 # Adding the required directories
 mkdir -p "$PROJECT_DIR/Helpers"
 mkdir -p "$PROJECT_DIR/reports"
+
+# Handling error if file permission is denied
+if [ $? -ne 0 ]; then
+    echo "Error: Check that you have permission to create directories here."
+    exit 1
+fi
 
 echo "directories created"
 
