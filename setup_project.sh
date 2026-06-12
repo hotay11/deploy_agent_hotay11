@@ -4,6 +4,23 @@ read -r -p "Enter project name: " project_name
 
 PROJECT_DIR="attendance_tracker_${project_name}"
 
+# Process managemnet (The trap)
+Signal_handling() {
+ echo ""
+ echo "SIGINT is used. Saving current project state..."
+
+  ARCHIVE_NAME="attendance_tracker_${project_name}_archive.tar.gz"
+
+  tar -czf "$ARCHIVE_NAME" "$PROJECT_DIR"
+
+  rm -rf "$PROJECT_DIR"
+
+ echo "Archive created: $ARCHIVE_NAME"
+ echo "Incomplete project removed"
+ exit 1
+}
+trap Signal_handling SIGINT
+
 # Adding the required directories
 mkdir -p "$PROJECT_DIR/Helpers"
 mkdir -p "$PROJECT_DIR/reports"
@@ -46,18 +63,11 @@ else
 	echo "skipped"
 fi
 
-# Process managemnet (The trap)
-Signal_handling() {
- echo ""
- echo "SIGINT detected. Saving current project state..."
+# Checking presence of a python environment
 
-  ARCHIVE_NAME="attendance_tracker_${project_name}_archive.tar.gz"
-
-  tar -czf "$ARCHIVE_NAME" "$PROJECT_DIR"
-
-  rm -rf "$PROJECT_DIR"
-
- echo "Archive created: $ARCHIVE_NAME"
- echo "Incomplete project removed"
- exit 1
-}
+echo "Checking if python3 is there..."
+if python3 --version >/dev/null 2>&1; then
+    echo "Python3 is installed"
+else
+    echo "Warning: Python3 is not installed"
+fi
